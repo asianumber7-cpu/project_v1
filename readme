@@ -20,3 +20,32 @@ docker-compose exec backend alembic upgrade head
 docker-compose exec backend python -m app.batch_embed
 
 # 7. http://localhost:5174 (또는 5173) 접속
+
+
+#도커로 푸쉬할때
+
+# 1. (최초 1회) hub.docker.com 가입 후, 터미널에서 로그인
+docker login
+
+# 2. docker-compose.yml 수정
+#    build: 대신 image: [내ID]/[이미지이름] 태그를 추가합니다.
+#    (예시: image: mydockerid/ai_shop_backend)
+#
+#    (수정된 docker-compose.yml 예시)
+#    ...
+#    backend:
+#      image: mydockerid/ai_shop_backend # (★추가)
+#      build:
+#        context: ./backend
+#    ...
+#    frontend:
+#      image: mydockerid/ai_shop_frontend # (★추가)
+#      build:
+#        context: ./frontend
+#    ...
+
+# 3. 새 이름(태그)으로 이미지 다시 빌드
+docker-compose build
+
+# 4. (★핵심★) 완성된 이미지를 도커 허브로 푸시
+docker-compose push
