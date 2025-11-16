@@ -10,7 +10,7 @@ app = FastAPI(
 
 # (★수정★) 5173을 5174로 변경
 origins = [
-    "http://localhost:5174",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
