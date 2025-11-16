@@ -1,7 +1,9 @@
-# docker-compose.yml (★최종 수정본★)
+# docker-compose.yml (★ 최종 개선판 ★)
+
+version: '3.8'
 
 services:
-  # 1. DB 서비스 (MySQL)
+  # 1. MySQL 데이터베이스
   db:
     image: mysql:8.0
     container_name: ai_shop_db
@@ -9,6 +11,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "12345" 
       MYSQL_DATABASE: "project_v1_db"
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
       - "3307:3306"
     volumes:
@@ -18,18 +22,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ai_shop_network
 
-  # 2. 백엔드 서비스 (FastAPI)
+  # 2. FastAPI 백엔드
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/ai_shop_backend:latest  # ← 환경변수 사용
     container_name: ai_shop_backend
     restart: always
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=mysql+asyncmy://root:12345@db:3306/project_v1_db
+      - PYTHONUNBUFFERED=1
     depends_on:
       db:
         condition: service_healthy
@@ -39,20 +47,28 @@ services:
       timeout: 5s
       retries: 12
       start_period: 60s
+    networks:
+      - ai_shop_network
 
-  # 3. 프론트엔드 서비스 (React + Nginx)
+  # 3. React + Nginx 프론트엔드
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME}/ai_shop_frontend:latest  # ← 환경변수 사용
     container_name: ai_shop_frontend
     restart: always
     ports:
-      # (★수정★) 5173을 5174로 변경
       - "5174:80"
     depends_on:
       backend:
-        condition: service_healthy 
+        condition: service_healthy
+    networks:
+      - ai_shop_network
 
 volumes:
   mysql_data:
+
+networks:
+  ai_shop_network:
+    driver: bridge

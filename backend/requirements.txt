@@ -1,14 +1,28 @@
-fastapi[all]
-sqlalchemy
-alembic
-asyncmy
-PyMySQL
-sentence-transformers
-torch
-python-jose[cryptography]
-passlib
+# backend/requirements.txt (★ 버전 고정으로 안정성 향상 ★)
+
+# FastAPI 및 웹 프레임워크
+fastapi[all]==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+
+# 데이터베이스
+sqlalchemy==2.0.25
+alembic==1.13.1
+asyncmy==0.2.9
+PyMySQL==1.1.0
+
+# AI/ML 라이브러리
+transformers==4.37.2
+torch==2.2.0
+pillow==10.2.0
+numpy==1.26.3
+scikit-learn==1.4.0
+
+# 인증/보안
+python-jose[cryptography]==3.3.0
+passlib==1.7.4
 bcrypt==3.2.2
-numpy
-scikit-learn
-pillow
-python-multipart
+python-multipart==0.0.6
+
+# HTTP 클라이언트
+httpx==0.26.0

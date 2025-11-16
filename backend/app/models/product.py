@@ -1,4 +1,4 @@
-# backend/app/models/product.py
+# backend/app/models/product.py (★수정★)
 
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
@@ -13,10 +13,11 @@ class Product(Base):
     description = Column(String(1000), nullable=True)
     image_url = Column(String(1000), nullable=False)
 
-    # 상품의 사이즈 재고 등을 JSON으로 저장
-    # 예: {"S": 10, "M": 20, "L": 5}
     size_info = Column(JSON, nullable=True)
 
-    # ProductVector 테이블과의 관계 설정
-    # 'ProductVector' 모델이 이 상품을 참조할 수 있도록 함
+    # (★추가★)
+    # 상품의 이름(name)과 설명(description)을 AI로 변환한 '텍스트 벡터'
+    text_vector = Column(JSON, nullable=True)
+
+    # ProductVector 테이블(이미지 벡터)과의 관계
     vectors = relationship("ProductVector", back_populates="product")

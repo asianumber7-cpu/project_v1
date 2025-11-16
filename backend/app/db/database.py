@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # ★★★ 본인의 MySQL 환경에 맞게 수정하세요 ★★★
 SQLALCHEMY_DATABASE_URL = os.environ.get(
     "DATABASE_URL", 
-    "mysql+asyncmy://root:password@localhost:3306/project_v1_db"
+    "mysql+asyncmy://root:12345@localhost:3306/project_v1_db"
 )
 
 # 2. 비동기 엔진 생성

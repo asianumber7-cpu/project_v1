@@ -1,51 +1,90 @@
-# (팀원의 PC에서 실행할 명령어)
+# AI 쇼핑몰 프로젝트
 
-# 1. "설계도" 다운로드
+KoCLIP 기반 AI 상품 추천 시스템
+
+##  빠른 시작 (팀원용)
+
+### 1. 사전 요구사항
+- Docker Desktop 설치 필수
+- Git 설치 필수
+
+### 2. 프로젝트 클론
+```bash
 git clone https://github.com/asianumber7-cpu/project_v1.git
-
-# 2. 프로젝트 폴더로 이동
 cd project_v1
+```
 
-# 3. (최초 1회) 도커 이미지 빌드 및 모든 컨테이너 실행
-# (이 과정에서 팀원 PC가 'backend', 'frontend' 이미지를 만듭니다)
+### 3. 도커 컨테이너 실행
+```bash
+# 최초 실행 (이미지 빌드 + 컨테이너 시작)
 docker-compose up --build -d
 
-# 4. (최초 1회) DB 테이블 생성
+# DB 초기화
 docker-compose exec backend alembic upgrade head
 
-# 5. (최초 1회) DB에 상품 데이터 넣기
-# (http://localhost:8000/docs 에 접속해서 Swagger UI로 상품 등록)
+# 샘플 데이터 삽입
+docker-compose exec backend python -m app.seed
 
-# 6. (최초 1회) AI 벡터 생성
+# AI 벡터 생성 (시간 소요: 약 2-3분)
 docker-compose exec backend python -m app.batch_embed
+```
 
-# 7. http://localhost:5174 (또는 5173) 접속
+### 4. 접속
+- 프론트엔드: http://localhost:5174
+- 백엔드 API: http://localhost:8000
+- API 문서: http://localhost:8000/docs
 
+### 5. 중지/재시작
+```bash
+# 중지
+docker-compose down
 
-#도커로 푸쉬할때
+# 재시작
+docker-compose up -d
+```
 
-# 1. (최초 1회) hub.docker.com 가입 후, 터미널에서 로그인
+##  Docker Hub 배포 (관리자용)
+
+### 1. Docker Hub 로그인
+```bash
 docker login
+```
 
-# 2. docker-compose.yml 수정
-#    build: 대신 image: [내ID]/[이미지이름] 태그를 추가합니다.
-#    (예시: image: mydockerid/ai_shop_backend)
-#
-#    (수정된 docker-compose.yml 예시)
-#    ...
-#    backend:
-#      image: mydockerid/ai_shop_backend # (★추가)
-#      build:
-#        context: ./backend
-#    ...
-#    frontend:
-#      image: mydockerid/ai_shop_frontend # (★추가)
-#      build:
-#        context: ./frontend
-#    ...
+### 2. .env 파일 설정
+```bash
+# .env 파일에 본인의 Docker Hub 사용자명 입력
+DOCKER_USERNAME=your_dockerhub_id
+```
 
-# 3. 새 이름(태그)으로 이미지 다시 빌드
+### 3. 이미지 빌드 및 푸시
+```bash
+# 빌드
 docker-compose build
 
-# 4. (★핵심★) 완성된 이미지를 도커 허브로 푸시
+# Docker Hub에 푸시
 docker-compose push
+```
+
+### 4. 팀원이 사용할 때
+```bash
+# docker-compose.yml에서 build 대신 image만 사용
+# 그러면 Docker Hub에서 자동으로 이미지를 다운로드
+docker-compose pull
+docker-compose up -d
+```
+
+## 📁 프로젝트 구조
+```
+project_v1/
+├── backend/          # FastAPI 서버
+├── frontend/         # React 클라이언트
+├── docker-compose.yml
+├── .env
+└── README.md
+```
+
+## 🛠️ 기술 스택
+- Backend: FastAPI, SQLAlchemy, KoCLIP
+- Frontend: React, Vite, TailwindCSS
+- Database: MySQL 8.0
+- AI: Transformers, PyTorch

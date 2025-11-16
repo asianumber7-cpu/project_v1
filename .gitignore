@@ -33,3 +33,40 @@ yarn-error.log
 # -------------------------------------------------------------------
 # (docker-compose.yml은 추적해야 함)
 # (Dockerfile은 추적해야 함)
+
+# frontend/.dockerignore
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+
+# 빌드 결과물 (Dockerfile에서 새로 만들기 때문에 제외)
+dist/
+build/
+
+# 환경 변수
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 테스트 관련
+coverage/
+.nyc_output/
+
+# Git
+.git/
+.gitignore
+
+# 기타
+*.md
+LICENSE
