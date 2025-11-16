@@ -1,23 +1,52 @@
-# .dockerignore
+# backend/.dockerignore
 
-# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 환경 변수 파일 (보안!)
 .env
-*.db
+.env.local
 
-# Conda/Venv
+# 가상환경
+venv/
 .venv/
+env/
 .conda/
-
-# Node
-node_modules/
-npm-debug.log
-
-# Git
-.git/
-.gitignore
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+.DS_Store
+
+# 데이터베이스 파일
+*.db
+*.sqlite
+*.sqlite3
+
+# 로그
+*.log
+
+# Alembic 버전 폴더 제외 (필요함)
+# alembic/versions/
+
+# 테스트 파일
+tests/
+test_*.py
+*_test.py
+
+# Git
+.git/
+.gitignore
