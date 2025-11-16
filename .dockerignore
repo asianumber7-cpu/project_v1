@@ -1,0 +1,23 @@
+# .dockerignore
+
+# Python
+__pycache__/
+*.pyc
+.env
+*.db
+
+# Conda/Venv
+.venv/
+.conda/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/

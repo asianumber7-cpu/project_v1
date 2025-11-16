@@ -1,0 +1,14 @@
+fastapi[all]
+sqlalchemy
+alembic
+asyncmy
+PyMySQL
+sentence-transformers
+torch
+python-jose[cryptography]
+passlib
+bcrypt==3.2.2
+numpy
+scikit-learn
+pillow
+python-multipart
