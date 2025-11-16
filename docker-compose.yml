@@ -1,7 +1,3 @@
-# docker-compose.yml (★ 최종 개선판 ★)
-
-version: '3.8'
-
 services:
   # 1. MySQL 데이터베이스
   db:
@@ -14,7 +10,7 @@ services:
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
-      - "3307:3306"
+      - "3306:3306"  # ← 3307이 아니라 3306
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -30,13 +26,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: ${DOCKER_USERNAME}/ai_shop_backend:latest  # ← 환경변수 사용
+    image: jeahun/ai_shop_backend:latest
     container_name: ai_shop_backend
     restart: always
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=mysql+asyncmy://root:12345@db:3306/project_v1_db
+      - DATABASE_URL=mysql+aiomysql://root:12345@db:3306/project_v1_db  # ← aiomysql로 변경
       - PYTHONUNBUFFERED=1
     depends_on:
       db:
@@ -55,11 +51,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: ${DOCKER_USERNAME}/ai_shop_frontend:latest  # ← 환경변수 사용
+    image: jeahun/ai_shop_frontend:latest
     container_name: ai_shop_frontend
     restart: always
     ports:
-      - "5174:80"
+      - "80:80"  # ← Nginx는 80 포트 사용
     depends_on:
       backend:
         condition: service_healthy

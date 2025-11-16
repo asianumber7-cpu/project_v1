@@ -1,3 +1,5 @@
+# backend/alembic/env.py (★ 개선 버전 ★)
+
 from logging.config import fileConfig
 from app.db.database import Base
 from sqlalchemy import engine_from_config
@@ -6,54 +8,28 @@ from app.models import user, product, product_vector
 from alembic import context
 import os
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
-# (★추가★) Docker 환경을 위한 DATABASE_URL 읽기
-# docker-compose.yml의 환경 변수를 Alembic이 사용하도록 설정합니다.
-# 1. docker-compose.yml에서 DATABASE_URL 환경 변수를 가져옵니다.
+# ★ 환경변수에서 DATABASE_URL 가져오기 ★
 docker_db_url = os.environ.get("DATABASE_URL")
 
 if docker_db_url:
-    # 2. (중요!) Alembic은 비동기(asyncmy) 드라이버를 못 쓰므로,
-    # "mysql+asyncmy://" 부분을 "mysql+pymysql://"로 '치환'합니다.
+    # asyncmy → pymysql 치환
     alembic_db_url = docker_db_url.replace("mysql+asyncmy://", "mysql+pymysql://")
-    
-    # 3. config 객체에 치환된 DB URL을 설정합니다.
-    # (이 코드는 alembic.ini의 sqlalchemy.url 설정을 덮어씁니다.)
+    alembic_db_url = alembic_db_url.replace("mysql+aiomysql://", "mysql+pymysql://")  # ← 추가!
     config.set_main_option('sqlalchemy.url', alembic_db_url)
-
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+    print(f"✅ Using DATABASE_URL: {alembic_db_url}")  # ← 디버깅용
+else:
+    print("⚠️ Using alembic.ini URL")  # ← 디버깅용
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
+    """Run migrations in 'offline' mode."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -67,12 +43,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
+    """Run migrations in 'online' mode."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -81,7 +52,8 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, 
+            target_metadata=target_metadata
         )
 
         with context.begin_transaction():
