@@ -1,90 +1,444 @@
-# AI 쇼핑몰 프로젝트
+# 🛍️ AI 쇼핑몰 프로젝트
 
-KoCLIP 기반 AI 상품 추천 시스템
+KoCLIP 기반 멀티모달 AI 상품 추천 시스템
 
-##  빠른 시작 (팀원용)
+> 이미지, 텍스트, 메타데이터를 활용한 하이브리드 추천 엔진
 
-### 1. 사전 요구사항
-- Docker Desktop 설치 필수
-- Git 설치 필수
+---
 
-### 2. 프로젝트 클론
+## 📋 목차
+
+- [빠른 시작 (신규 팀원)](#-빠른-시작-신규-팀원)
+- [기존 팀원 - 업데이트 받기](#-기존-팀원---업데이트-받기)
+- [다른 컴퓨터에서 실행하기](#-다른-컴퓨터에서-실행하기)
+- [관리자 - 배포하기](#-관리자---배포하기)
+- [문제 해결](#-문제-해결)
+- [프로젝트 구조](#-프로젝트-구조)
+- [기술 스택](#-기술-스택)
+- [주요 기능](#-주요-기능)
+- [API 엔드포인트](#-api-엔드포인트)
+
+---
+
+## 🚀 빠른 시작 (신규 팀원)
+
+### 1️⃣ 사전 요구사항
+
+**필수 설치:**
+- ✅ [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- ✅ [Git](https://git-scm.com/downloads)
+
+**설치 확인:**
+```bash
+docker --version
+docker-compose --version
+git --version
+```
+
+### 2️⃣ 프로젝트 클론
 ```bash
 git clone https://github.com/asianumber7-cpu/project_v1.git
 cd project_v1
 ```
 
-### 3. 도커 컨테이너 실행
+### 3️⃣ 환경 설정
 ```bash
-# 최초 실행 (이미지 빌드 + 컨테이너 시작)
-docker-compose up --build -d
+# Windows (PowerShell)
+echo "DOCKER_USERNAME=jeahun" > .env
 
-# DB 초기화
+# Mac/Linux
+echo "DOCKER_USERNAME=jeahun" > .env
+```
+
+### 4️⃣ Docker 이미지 다운로드
+```bash
+docker-compose pull
+```
+⏱️ 예상 소요 시간: 5-10분
+
+### 5️⃣ 컨테이너 실행
+```bash
+docker-compose up -d
+```
+
+**실행 확인:**
+```bash
+docker-compose ps
+```
+
+### 6️⃣ 데이터베이스 초기화
+```bash
+# 1. DB 테이블 생성
 docker-compose exec backend alembic upgrade head
 
-# 샘플 데이터 삽입
+# 2. 샘플 데이터 삽입
 docker-compose exec backend python -m app.seed
 
-# AI 벡터 생성 (시간 소요: 약 2-3분)
+# 3. AI 벡터 생성 (2-3분 소요)
 docker-compose exec backend python -m app.batch_embed
 ```
 
-### 4. 접속
-- 프론트엔드: http://localhost:5173
-- 백엔드 API: http://localhost:8000
-- API 문서: http://localhost:8000/docs
+### 7️⃣ 접속 확인
 
-### 5. 중지/재시작
+| 서비스 | URL | 설명 |
+|--------|-----|------|
+| 프론트엔드 | http://localhost | React 웹 페이지 |
+| 백엔드 API | http://localhost:8000 | FastAPI 서버 |
+| API 문서 | http://localhost:8000/docs | Swagger UI |
+
+### 8️⃣ 중지 및 재시작
 ```bash
 # 중지
 docker-compose down
 
 # 재시작
 docker-compose up -d
+
+# 완전 삭제 (데이터 포함)
+docker-compose down -v
 ```
 
-##  Docker Hub 배포 (관리자용)
+---
 
-### 1. Docker Hub 로그인
+## 🔄 기존 팀원 - 업데이트 받기
+
+### 방법 1: 빠른 업데이트
 ```bash
+cd project_v1
+git pull origin main
+docker-compose down
+docker-compose pull
+docker-compose up -d
+docker-compose exec backend alembic upgrade head
+```
+
+### 방법 2: 완전 재설치 (문제 발생 시)
+```bash
+docker-compose down -v
+git pull origin main
+docker-compose pull
+docker-compose up -d
+docker-compose exec backend alembic upgrade head
+docker-compose exec backend python -m app.seed
+docker-compose exec backend python -m app.batch_embed
+```
+
+---
+
+## 💻 다른 컴퓨터에서 실행하기
+
+### 전체 실행 과정
+```bash
+# 1. 프로젝트 클론
+git clone https://github.com/asianumber7-cpu/project_v1.git
+cd project_v1
+
+# 2. 환경 변수 설정
+echo "DOCKER_USERNAME=jeahun" > .env
+
+# 3. 포트 확인 (사용 중이면 종료)
+# Windows: netstat -ano | findstr :80
+# Mac/Linux: lsof -i :80
+
+# 4. Docker 이미지 다운로드
+docker-compose pull
+
+# 5. 컨테이너 실행
+docker-compose up -d
+
+# 6. DB 초기화
+docker-compose exec backend alembic upgrade head
+docker-compose exec backend python -m app.seed
+docker-compose exec backend python -m app.batch_embed
+
+# 7. 접속 확인
+# 브라우저: http://localhost
+```
+
+### 포트 충돌 해결
+
+`docker-compose.yml` 수정:
+```yaml
+services:
+  frontend:
+    ports:
+      - "8080:80"  # 80 → 8080
+  backend:
+    ports:
+      - "8001:8000"  # 8000 → 8001
+  db:
+    ports:
+      - "3307:3306"  # 3306 → 3307
+```
+
+---
+
+## 🔐 관리자 - 배포하기
+
+### 코드 변경 후 배포
+```bash
+# 1. 코드 커밋
+git add .
+git commit -m "설명"
+git push origin main
+
+# 2. Docker Hub 로그인
 docker login
-```
 
-### 2. .env 파일 설정
-```bash
-# .env 파일에 본인의 Docker Hub 사용자명 입력
-DOCKER_USERNAME=your_dockerhub_id
-```
-
-### 3. 이미지 빌드 및 푸시
-```bash
-# 빌드
-docker-compose build
-
-# Docker Hub에 푸시
+# 3. 이미지 빌드 & 푸시
+docker-compose build --no-cache
 docker-compose push
 ```
 
-### 4. 팀원이 사용할 때
+### 로컬 테스트 후 배포
 ```bash
-# docker-compose.yml에서 build 대신 image만 사용
-# 그러면 Docker Hub에서 자동으로 이미지를 다운로드
-docker-compose pull
+# 1. 로컬 테스트
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up -d
+docker-compose exec backend alembic upgrade head
+docker-compose exec backend python -m app.seed
+docker-compose exec backend python -m app.batch_embed
+
+# 2. 브라우저 테스트
+# http://localhost
+
+# 3. 문제 없으면 푸시
+docker-compose push
+git push origin main
+```
+
+---
+
+## 🛠️ 문제 해결
+
+### 컨테이너가 시작되지 않음
+```bash
+docker-compose logs backend
+docker-compose logs frontend
+docker-compose down
 docker-compose up -d
 ```
+
+### 포트 충돌
+```bash
+# Windows
+netstat -ano | findstr :80
+taskkill /PID [PID번호] /F
+
+# Mac/Linux
+lsof -i :80
+kill -9 [PID번호]
+```
+
+### 데이터베이스 연결 실패
+```bash
+docker-compose ps
+docker exec -it ai_shop_db mysql -u root -p12345
+docker-compose restart db
+```
+
+### 프론트엔드가 안 보임
+```bash
+docker-compose logs frontend
+docker exec -it ai_shop_frontend ls -la /usr/share/nginx/html
+docker-compose down
+docker-compose build --no-cache frontend
+docker-compose up -d
+```
+
+### AI 벡터 생성 실패
+```bash
+# 503 에러는 정상 (일부 이미지 URL 문제)
+docker-compose exec backend python -m app.batch_embed
+```
+
+### "No module named 'aiomysql'"
+```bash
+# requirements.txt 확인
+cat backend/requirements.txt | grep aiomysql
+
+# 없으면 추가 후 재빌드
+echo "aiomysql==0.2.0" >> backend/requirements.txt
+docker-compose build --no-cache backend
+docker-compose up -d
+```
+
+### Alembic 마이그레이션 에러
+```bash
+docker-compose exec backend alembic current
+docker-compose exec backend alembic upgrade head
+```
+
+### "Event loop is closed" 경고
+
+**무시해도 됩니다!** 중요한 건 `"10개 상품 데이터 시딩 완료"` 메시지입니다.
+
+---
 
 ## 📁 프로젝트 구조
 ```
 project_v1/
-├── backend/          # FastAPI 서버
-├── frontend/         # React 클라이언트
+├── backend/                 # FastAPI 백엔드
+│   ├── app/
+│   │   ├── api/v1/
+│   │   │   ├── api.py
+│   │   │   └── endpoints/
+│   │   │       ├── products.py
+│   │   │       ├── users.py
+│   │   │       └── recommend/
+│   │   │           ├── base.py      # 기본 추천
+│   │   │           ├── advanced.py  # 고급 추천
+│   │   │           └── utils.py
+│   │   ├── models/         # DB 모델
+│   │   ├── schemas/        # Pydantic 스키마
+│   │   ├── crud/           # DB CRUD
+│   │   ├── db/             # 데이터베이스
+│   │   ├── seed.py         # 샘플 데이터
+│   │   ├── batch_embed.py  # AI 벡터
+│   │   └── main.py
+│   ├── alembic/            # DB 마이그레이션
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── frontend/               # React 프론트엔드
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── api.js
+│   │   └── App.jsx
+│   ├── nginx.conf
+│   ├── Dockerfile
+│   └── package.json
+│
 ├── docker-compose.yml
 ├── .env
 └── README.md
 ```
 
+---
+
 ## 🛠️ 기술 스택
-- Backend: FastAPI, SQLAlchemy, KoCLIP
-- Frontend: React, Vite, TailwindCSS
-- Database: MySQL 8.0
-- AI: Transformers, PyTorch
+
+### Backend
+- **FastAPI** 0.109.0 - 웹 프레임워크
+- **SQLAlchemy** 2.0.25 - ORM
+- **Alembic** 1.13.1 - DB 마이그레이션
+- **aiomysql** 0.2.0 - MySQL 드라이버
+- **Transformers** 4.37.2 - KoCLIP 모델
+- **PyTorch** 2.2.0 - 딥러닝
+- **Pillow** 10.2.0 - 이미지 처리
+
+### Frontend
+- **React** 18 - UI 라이브러리
+- **Vite** 5 - 빌드 도구
+- **React Router** 6 - 라우팅
+- **Axios** - HTTP 클라이언트
+
+### Infrastructure
+- **MySQL** 8.0 - 데이터베이스
+- **Nginx** 1.25 - 웹 서버
+- **Docker** - 컨테이너화
+
+### AI Model
+- **KoCLIP** (koclip/koclip-base-pt)
+  - 한국어 멀티모달 모델
+  - 이미지 벡터: 512차원
+  - 텍스트 벡터: 512차원
+  - 코사인 유사도 기반 추천
+
+---
+
+## ✨ 주요 기능
+
+### 1. 멀티모달 AI 추천
+- 🖼️ **이미지 유사도** - 시각적으로 비슷한 상품
+- 📝 **텍스트 검색** - 자연어 상품 검색
+- 🎯 **하이브리드** - 키워드(70%) + 이미지(30%)
+
+### 2. 메타데이터 기반 추천
+- 🎨 **색상별** - 같은 스타일, 다른 색상
+- 💰 **가격대별** - 비슷한 가격대
+- 🌸 **시즌별** - 봄/여름/가을/겨울
+- 👔 **코디** - 상/하의 매칭
+
+### 3. 사용자 경험
+- 📱 반응형 디자인
+- ⚡ 빠른 로딩
+- 🎨 깔끔한 UI/UX
+- 🔍 실시간 검색
+
+---
+
+## 📊 API 엔드포인트
+
+### 상품 관리
+```
+GET  /api/v1/products           # 전체 상품
+GET  /api/v1/products/{id}      # 상품 상세
+```
+
+### 기본 추천
+```
+GET  /api/v1/recommend/by-product/{id}     # 유사 상품
+GET  /api/v1/recommend/by-text?query=검색어  # 텍스트 검색
+POST /api/v1/recommend/by-image-upload     # 이미지 업로드
+```
+
+### 고급 추천
+```
+GET /api/v1/recommend/by-color/{id}              # 색상별
+GET /api/v1/recommend/by-price-range/{id}        # 가격대별
+GET /api/v1/recommend/by-season?season=겨울       # 시즌별
+GET /api/v1/recommend/coordination/{id}          # 코디
+```
+
+---
+
+## 🚀 개발 가이드
+
+### 로컬 개발 (Docker 없이)
+```bash
+# 백엔드
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+# 프론트엔드 (새 터미널)
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🤝 기여 가이드
+
+1. Fork the Project
+2. Create Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit Changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to Branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+---
+
+## 👥 팀
+
+**재훈** - [@jeahun10717](https://github.com/jeahun10717)
+
+---
+
+## 📞 문의
+
+- GitHub Issues: [Issues](https://github.com/jeahun10717/project_v1/issues)
+- Email: your-email@example.com
+
+---
+
+## 🎉 완료!
+
+축하합니다! AI 쇼핑몰이 실행되었습니다.
+
+**브라우저에서 http://localhost 접속하세요!** 🚀
