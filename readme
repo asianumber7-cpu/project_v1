@@ -1,0 +1,22 @@
+# (팀원의 PC에서 실행할 명령어)
+
+# 1. "설계도" 다운로드
+git clone https://github.com/asianumber7-cpu/project_v1.git
+
+# 2. 프로젝트 폴더로 이동
+cd project_v1
+
+# 3. (최초 1회) 도커 이미지 빌드 및 모든 컨테이너 실행
+# (이 과정에서 팀원 PC가 'backend', 'frontend' 이미지를 만듭니다)
+docker-compose up --build -d
+
+# 4. (최초 1회) DB 테이블 생성
+docker-compose exec backend alembic upgrade head
+
+# 5. (최초 1회) DB에 상품 데이터 넣기
+# (http://localhost:8000/docs 에 접속해서 Swagger UI로 상품 등록)
+
+# 6. (최초 1회) AI 벡터 생성
+docker-compose exec backend python -m app.batch_embed
+
+# 7. http://localhost:5174 (또는 5173) 접속
