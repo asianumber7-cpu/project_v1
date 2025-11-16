@@ -12,65 +12,66 @@ from app.models import user, product_vector
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# (★학생님이 등록했던 10개의 상품 데이터★)
+
+
 PRODUCT_DATA = [
     {
         "name": "회색 깃발크립 와이드 핏 트레이닝 팬츠",
-        "description": "가을용 트레이닝 조거 팬츠 지크립 바지",
+        "description": "가을용 트레이닝 조거 팬츠 편안한 와이드 핏 운동복",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20240802/4292299/4292299_17225758319642_big.png?w=1200",
         "size_info": {"M": 10, "L": 20}
     },
     {
-        "name": "회색 깃발크립 와이드 핏 트레이닝 팬츠", # (ID 2 - 이름 중복이지만 테스트용으로 OK)
-        "description": "가을용 트레이닝 조거 팬츠 지크립 바지",
+        "name": "회색 깃발크립 와이드 핏 트레이닝 팬츠",
+        "description": "가을용 트레이닝 조거 팬츠 편안한 와이드 핏 운동복",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20240802/4292299/4292299_17225758319642_big.png?w=1200",
         "size_info": {"M": 10, "L": 20}
     },
     {
-        "name": "회색 깃발크립 와이드 핏 트레이닝 팬츠", # (ID 3 - 이름 중복이지만 테스트용으로 OK)
-        "description": "가을용 트레이닝 조거 팬츠 지크립 바지",
+        "name": "회색 깃발크립 와이드 핏 트레이닝 팬츠",
+        "description": "가을용 트레이닝 조거 팬츠 편안한 와이드 핏 운동복",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20240802/4292299/4292299_17225758319642_big.png?w=1200",
         "size_info": {"M": 10, "L": 20}
     },
     {
         "name": "P2403 배색 와이드 트랙팬츠",
-        "description": "배색 와이드 트랙팬츠",
+        "description": "배색 디자인 와이드 트랙 팬츠 편안한 핏",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20241011/4508722/4508722_17286278760083_big.jpg?w=1200",
         "size_info": {"S": 5, "M": 10}
     },
     {
         "name": "시그니처 밴드 나일론 조거 팬츠 (BLACK)",
-        "description": "나일론 조거 팬츠",
+        "description": "블랙 나일론 조거 팬츠 시그니처 밴드 디자인",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20251028/5652489/5652489_17616242676562_big.jpg?w=1200",
         "size_info": {"L": 15, "XL": 10}
     },
     {
         "name": "[기모원단추가]88 크로스 백 패치 스웨트 팬츠",
-        "description": "기모 스웨트 팬츠",
+        "description": "기모 안감 크로스 백 패치 스웨트 팬츠 겨울용",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20250808/5306789/5306789_17557676327782_big.jpg?w=1200",
         "size_info": {"M": 10, "L": 10}
     },
     {
         "name": "501® 오리지널 RIGID 진_00501-0000",
-        "description": "오리지널 데님",
+        "description": "리바이스 501 오리지널 리지드 데님 청바지 진",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20220317/2425479/2425479_17182629052451_big.jpg?w=1200",
         "size_info": {"30": 5, "32": 10, "34": 5}
     },
     {
         "name": "Sun Dance Denim Pants - Black",
-        "description": "자수 데님 팬츠",
+        "description": "블랙 데님 청바지 자수 디자인 팬츠",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20240131/3836236/3836236_17147196759244_big.png?w=1200",
         "size_info": {"M": 10, "L": 10}
     },
     {
-        "name": "스웨이드 무스탕_카멜",
-        "description": "스웨이드 무스탕",
+        "name": "스웨이드 무스탕 카멜",  # ← 언더스코어 제거
+        "description": "카멜 컬러 스웨이드 무스탕 자켓 양털 안감",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20251014/5586316/5586316_17610321361157_big.jpg?w=1200",
         "size_info": {"FREE": 20}
     },
     {
         "name": "리얼 B3 무스탕 자켓 맨 (블랙)",
-        "description": "B3 무스탕 자켓",
+        "description": "블랙 B3 무스탕 자켓 양털 리얼 레더",  # ← 개선
         "image_url": "https://image.msscdn.net/thumbnails/images/goods_img/20181128/914738/914738_16992551007717_big.jpg?w=1200",
         "size_info": {"L": 5, "XL": 5}
     }
