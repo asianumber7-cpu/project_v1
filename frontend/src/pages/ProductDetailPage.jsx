@@ -149,7 +149,7 @@ function ProductDetailPage() {
           {/* 탭 버튼 */}
           <div className="tabs">
             <button 
-              className={`tab ${activeTab === 'similar' ? 'active' : ''}`}
+              className={`detail-tab ${activeTab === 'similar' ? 'active' : ''}`}
               onClick={() => setActiveTab('similar')}
             >
               <span className="tab-icon">🎯</span>
@@ -159,7 +159,7 @@ function ProductDetailPage() {
             
             {colorVariants.length > 0 && (
               <button 
-                className={`tab ${activeTab === 'color' ? 'active' : ''}`}
+                className={`detail-tab ${activeTab === 'color' ? 'active' : ''}`}
                 onClick={() => setActiveTab('color')}
               >
                 <span className="tab-icon">🎨</span>
@@ -170,7 +170,7 @@ function ProductDetailPage() {
             
             {priceRange.length > 0 && (
               <button 
-                className={`tab ${activeTab === 'price' ? 'active' : ''}`}
+                className={`detail-tab ${activeTab === 'price' ? 'active' : ''}`}
                 onClick={() => setActiveTab('price')}
               >
                 <span className="tab-icon">💰</span>
@@ -181,7 +181,7 @@ function ProductDetailPage() {
             
             {coordination.length > 0 && (
               <button 
-                className={`tab ${activeTab === 'coordination' ? 'active' : ''}`}
+                className={`detail-tab ${activeTab === 'coordination' ? 'active' : ''}`}
                 onClick={() => setActiveTab('coordination')}
               >
                 <span className="tab-icon">👔</span>

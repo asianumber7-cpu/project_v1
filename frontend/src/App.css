@@ -1,4 +1,9 @@
 /* frontend/src/App.css */
+
+/* ==========================================
+   기본 및 공통 스타일 (Block 1)
+   ========================================== */
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -70,22 +75,26 @@
 .back-link:hover {
   text-decoration: underline;
 }
+
+/* Block 1의 상세 이미지 (충돌 방지를 위해 원본 유지) */
 .detail-product-image {
   width: 100%;
-  max-width: 600px;
+  max-width: 600px; /* 원본 600px */
   height: auto;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 1rem;
 }
+
+/* Block 1의 추천 섹션 (충돌 방지를 위해 원본 유지) */
 .recommendation-section {
   padding: 1rem;
-  background-color: #f9f9f9;
+  background-color: #f9f9f9; /* 원본 #f9f9f9 */
   border-radius: 8px;
 }
 .recommendation-section h3 {
   margin-top: 0;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid #eee; /* 원본 border-bottom */
   padding-bottom: 0.5rem;
 }
 .recommendation-section .product-grid {
@@ -165,9 +174,11 @@
   color: #888;
 }
 
-/* frontend/src/index.css 또는 App.css 하단에 추가 */
+/* ==========================================
+   상품 상세 페이지 개선 (Block 2)
+   - 충돌을 피하기 위해 클래스 이름 변경
+   ========================================== */
 
-/* 상품 상세 페이지 개선 */
 .main-product-details {
   background: white;
   padding: 2rem;
@@ -176,15 +187,17 @@
   margin-bottom: 2rem;
 }
 
-.detail-product-image {
+/* 충돌 수정: .detail-product-image -> .detail-product-image-improved */
+.detail-product-image-improved {
   width: 100%;
-  max-width: 500px;
+  max-width: 500px; /* 개선 버전 500px */
   border-radius: 8px;
   margin: 1rem 0;
 }
 
-.product-price {
-  font-size: 1.5rem;
+/* 충돌 수정: .product-price -> .product-price-improved */
+.product-price-improved {
+  font-size: 1.5rem; /* 개선 버전 1.5rem */
   font-weight: 700;
   color: #2563eb;
   margin: 0.5rem 0;
@@ -197,7 +210,7 @@
   color: #666;
 }
 
-/* 탭 스타일 */
+/* 탭 스타일 (Block 2) - 충돌 수정: .tab -> .recommendation-tab */
 .recommendation-tabs {
   display: flex;
   gap: 0.5rem;
@@ -205,7 +218,7 @@
   flex-wrap: wrap;
 }
 
-.tab {
+.recommendation-tab {
   padding: 0.75rem 1.5rem;
   background: white;
   border: 2px solid #e5e7eb;
@@ -217,53 +230,57 @@
   transition: all 0.3s;
 }
 
-.tab:hover {
+.recommendation-tab:hover {
   border-color: #2563eb;
   color: #2563eb;
 }
 
-.tab.active {
+.recommendation-tab.active {
   background: #2563eb;
   color: white;
   border-color: #2563eb;
 }
 
-/* 추천 섹션 */
-.recommendation-section {
-  background: white;
+/* 충돌 수정: .recommendation-section -> .recommendation-section-improved */
+.recommendation-section-improved {
+  background: white; /* 개선 버전 white */
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.recommendation-section h3 {
-  margin-bottom: 1.5rem;
+.recommendation-section-improved h3 {
+  margin-bottom: 1.5rem; /* 개선 버전 h3 */
   font-size: 1.5rem;
   font-weight: 600;
+  margin-top: 0; /* 원본의 margin-top:0도 병합 */
+  border-bottom: none; /* 충돌 방지 */
+  padding-bottom: 0; /* 충돌 방지 */
 }
 
-/* 반응형 */
+/* 반응형 (Block 2) */
 @media (max-width: 768px) {
   .recommendation-tabs {
     overflow-x: auto;
     flex-wrap: nowrap;
   }
 
-  .tab {
+  /* 충돌 수정: .tab -> .recommendation-tab */
+  .recommendation-tab {
     white-space: nowrap;
     font-size: 0.9rem;
     padding: 0.6rem 1rem;
   }
 
-  .detail-product-image {
+  /* 충돌 수정: .detail-product-image -> .detail-product-image-improved */
+  .detail-product-image-improved {
     max-width: 100%;
   }
 }
 
-/* frontend/src/index.css 또는 App.css에 추가 */
-
 /* ==========================================
-   상품 상세 페이지 스타일
+   상품 상세 페이지 스타일 (Block 3)
+   - 가장 최신 버전으로 보이며, 대부분 고유한 클래스 사용
    ========================================== */
 
 .product-detail-page {
@@ -334,8 +351,9 @@
   margin: 0;
 }
 
+/* Block 3의 .product-price (최종 버전) */
 .product-price {
-  font-size: 2.5rem;
+  font-size: 2.5rem; /* 최종 2.5rem */
   font-weight: 800;
   color: #2563eb;
 }
@@ -422,7 +440,7 @@
   transform: translateY(-2px);
 }
 
-/* 추천 섹션 */
+/* 추천 섹션 (Block 3) - 고유 이름 사용 */
 .recommendation-wrapper {
   background: white;
   padding: 3rem;
@@ -437,7 +455,7 @@
   margin: 0 0 2rem 0;
 }
 
-/* 탭 */
+/* 탭 (Block 3) - 충돌 수정: .tab -> .detail-tab */
 .tabs {
   display: flex;
   gap: 0.5rem;
@@ -446,7 +464,7 @@
   overflow-x: auto;
 }
 
-.tab {
+.detail-tab {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -473,19 +491,19 @@
   color: #9ca3af;
 }
 
-.tab:hover .tab-text {
+.detail-tab:hover .tab-text {
   color: #2563eb;
 }
 
-.tab.active {
+.detail-tab.active {
   border-bottom-color: #2563eb;
 }
 
-.tab.active .tab-text {
+.detail-tab.active .tab-text {
   color: #2563eb;
 }
 
-.tab.active .tab-count {
+.detail-tab.active .tab-count {
   color: #2563eb;
 }
 
@@ -551,7 +569,7 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-/* 반응형 */
+/* 반응형 (Block 3) */
 @media (max-width: 1024px) {
   .product-detail-wrapper {
     grid-template-columns: 1fr;
@@ -585,7 +603,8 @@
     gap: 0.25rem;
   }
 
-  .tab {
+  /* 충돌 수정: .tab -> .detail-tab */
+  .detail-tab {
     padding: 0.75rem 1rem;
   }
 
