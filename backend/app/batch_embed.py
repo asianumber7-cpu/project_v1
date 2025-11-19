@@ -16,7 +16,7 @@ from app.models.product_vector import ProductVector
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ★ KoCLIP 올바른 사용법 ★
+
 MODEL_NAME = 'koclip/koclip-base-pt'
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
