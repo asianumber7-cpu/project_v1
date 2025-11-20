@@ -1,5 +1,4 @@
 services:
-  # 1. MySQL 데이터베이스
   db:
     image: mysql:8.0
     container_name: ai_shop_db
@@ -10,9 +9,14 @@ services:
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
-      - "3307:3306"  # ← 3307이 아니라 3306
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    # ★ [추가] 명령어로 charset 강제 설정
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
       interval: 10s
@@ -21,7 +25,6 @@ services:
     networks:
       - ai_shop_network
 
-  # 2. FastAPI 백엔드
   backend:
     build:
       context: ./backend
@@ -32,16 +35,15 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=mysql+aiomysql://root:12345@db:3306/project_v1_db  # ← aiomysql로 변경
+      # ★★★ 핵심: charset=utf8mb4 명시 ★★★
+      - DATABASE_URL=mysql+aiomysql://root:12345@db:3306/project_v1_db?charset=utf8mb4
       - PYTHONUNBUFFERED=1
     depends_on:
       db:
         condition: service_healthy
-
     volumes:
-      - ./backend/app:/app/app  # (코드 연결) 내 컴퓨터 코드를 도커 안으로 연결
-      - ./backend/app/data:/app/app/data # (데이터 연결)
-
+      - ./backend/app:/app/app
+      - ./backend/app/data:/app/app/data
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8000/"]
       interval: 10s
@@ -51,7 +53,6 @@ services:
     networks:
       - ai_shop_network
 
-  # 3. React + Nginx 프론트엔드
   frontend:
     build:
       context: ./frontend
@@ -60,7 +61,7 @@ services:
     container_name: ai_shop_frontend
     restart: always
     ports:
-      - "80:80"  # ← Nginx는 80 포트 사용
+      - "80:80"
     depends_on:
       backend:
         condition: service_healthy

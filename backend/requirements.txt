@@ -1,4 +1,4 @@
-# backend/requirements.txt (★ 버전 고정으로 안정성 향상 ★)
+# backend/requirements.txt
 
 # FastAPI 및 웹 프레임워크
 fastapi[all]==0.109.0
@@ -8,10 +8,9 @@ pydantic==2.5.3
 # 데이터베이스
 sqlalchemy==2.0.25
 alembic==1.13.1
-asyncmy==0.2.9
+aiomysql==0.2.0        
 PyMySQL==1.1.0
-aiomysql==0.2.0        # ← 추가!
-cryptography==41.0.7   # ← 추가 (aiomysql 의존성)
+cryptography==41.0.7
 
 # AI/ML 라이브러리
 transformers==4.37.2
@@ -29,6 +28,6 @@ python-multipart==0.0.6
 # HTTP 클라이언트
 httpx==0.26.0
 
-#테스트 라이브러리
+# 테스트 라이브러리
 pytest
 httpx

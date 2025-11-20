@@ -57,53 +57,105 @@ async def search_products_by_text_vector(
     db: AsyncSession, 
     query_vector: list, 
     top_k: int = 10, 
-    threshold: float = 0.65,
-    keywords: list = None,  # ← 수정: str → list
-    season_filter: str = None
+    threshold: float = 0.50,
+    keywords: list = None,
+    season_filter: str = None,
+    gender_filter: str = None
 ):
-    """
-    텍스트 쿼리 벡터로 상품의 text_vector와 비교하여 검색
-    사용처: "패딩", "원피스" 같은 텍스트 검색
-    keywords: 모든 키워드가 상품명에 포함되어야 함 (AND 조건)
-    """
+    """텍스트 쿼리 벡터로 검색"""
     result = await db.execute(select(Product))
     products = result.scalars().all()
 
+    # 여성 전용 아이템
+    female_only_items = {"원피스", "블라우스", "스커트", "치마"}
+    
+    sports_keywords = {"레깅스", "쇼츠", "타이즈", "컴프레션"}
+    has_sports_keyword = keywords and (sports_keywords & set(kw.lower() for kw in keywords))
+    
+    # ★★★ 계절/날씨 키워드 감지 ★★★
+    hot_keywords = {"쇼츠"}  # 더울 때 키워드
+    cold_keywords = {"패딩", "롱패딩", "코트"}  # 추울 때 키워드
+    
+    is_hot_query = keywords and any(kw in hot_keywords for kw in keywords)
+    is_cold_query = keywords and any(kw in cold_keywords for kw in keywords)
+    
     scored_products = []
     
     for product in products:
         if not product.text_vector:
             continue
-
-        # ★ 계절 필터링 (추가)
+        
+        product_text = f"{product.name} {product.description or ''}".lower()
+        
+        # ★★★ 계절 모순 필터링 ★★★
+        if is_hot_query:
+            # 더운 날씨 검색 시 겨울 아이템 제외
+            if any(word in product_text for word in ["겨울", "윈터", "기모", "플리스", "패딩", "롱패딩", "울", "코듀로이"]):
+                continue
+        
+        if is_cold_query:
+            # 추운 날씨 검색 시 여름 아이템 제외
+            if any(word in product_text for word in ["여름", "썸머", "비치", "쿨링", "메쉬"]):
+                continue
+        
+        # 남성 필터 시 여성 전용 아이템 제외
+        if gender_filter == "남성":
+            if any(item in product_text for item in female_only_items):
+                continue
+        
+        # 성별 필터
+        if gender_filter:
+            if gender_filter == "여성":
+                has_female = "여성" in product.name or "여자" in product.name
+                is_neutral_sports = has_sports_keyword and any(kw in product_text for kw in sports_keywords)
+                is_likely_female = any(word in product_text for word in ["하이웨이스트", "요가", "필라테스"])
+                
+                if not (has_female or is_neutral_sports or is_likely_female):
+                    if "남성" in product.name or "남자" in product.name:
+                        continue
+                        
+            elif gender_filter == "남성":
+                has_male = "남성" in product.name or "남자" in product.name
+                is_neutral_sports = has_sports_keyword and any(kw in product_text for kw in sports_keywords)
+                is_likely_male = any(word in product_text for word in ["컴프레션", "퍼포먼스", "머슬핏"])
+                
+                if not (has_male or (is_neutral_sports and not ("하이웨이스트" in product_text or "요가" in product_text)) or is_likely_male):
+                    if "여성" in product.name or "여자" in product.name:
+                        continue
+        
+        # 계절 필터
         if season_filter and product.season:
-            # 해당 계절이거나 사계절 상품만 통과
             if season_filter not in product.season and "사계절" not in product.season:
                 continue
         
-        # ★ 키워드 필터링 (모든 키워드 AND 조건)
+        # 키워드 필터
         if keywords:
-            product_name_lower = product.name.lower()
-            # 모든 키워드가 상품명에 있는지 확인
-            if not all(kw.lower() in product_name_lower for kw in keywords):
+            if not any(kw.lower() in product_text for kw in keywords):
                 continue
-            
+        
+        # 벡터 점수 계산
         score = cosine_similarity(query_vector, product.text_vector)
         
-        if score >= threshold:
+        # 운동복 부스트
+        is_sports_product = False
+        if has_sports_keyword:
+            product_text_lower = f"{product.name} {product.description or ''}".lower()
+            is_sports_product = any(sport_kw in product_text_lower for sport_kw in sports_keywords)
+            
+            if is_sports_product:
+                score = score * 5.0
+                print(f"  🏃 운동복 부스트: {product.name} ({score:.4f})")
+        
+        effective_threshold = threshold * 0.2 if is_sports_product else threshold
+        
+        if score >= effective_threshold:
             scored_products.append((product, score))
 
-           
-
-    # 점수 높은 순 정렬
     scored_products.sort(key=lambda x: x[1], reverse=True)
-    
-    # 상위 K개
     final_results = scored_products[:top_k]
 
-    # 디버깅 출력
     print("\n" + "="*50)
-    print(f"🔍 텍스트 검색 (키워드: {keywords}, 커트라인: {threshold})")
+    print(f"🔍 텍스트 검색 (키워드: {keywords}, 성별: {gender_filter}, 계절: {season_filter}, 커트라인: {threshold})")
     if not final_results:
         print("❌ 조건에 맞는 상품이 없습니다.")
     else:
