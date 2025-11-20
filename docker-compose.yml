@@ -10,7 +10,7 @@ services:
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
-      - "3306:3306"  # ← 3307이 아니라 3306
+      - "3307:3306"  # ← 3307이 아니라 3306
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -37,6 +37,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+    volumes:
+      - ./backend/app:/app/app  # (코드 연결) 내 컴퓨터 코드를 도커 안으로 연결
+      - ./backend/app/data:/app/app/data # (데이터 연결)
+
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8000/"]
       interval: 10s

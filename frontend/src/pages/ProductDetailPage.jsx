@@ -21,19 +21,30 @@ function ProductDetailPage() {
         setLoading(true);
         setRecommended([]);
 
+        // 1. 현재 상품 정보
         const productRes = await api.get(`/products/${productId}`);
         setProduct(productRes.data);
 
-        const recommendRes = await api.get(`/recommend/by-product/${productId}`);
-        setRecommended(recommendRes.data);
-
+        // 2. AI 추천 (유사 상품)
+        // (이 부분은 기존 API 유지. 나중에 벡터 검색으로 고도화 가능)
         try {
-          const colorRes = await api.get(`/recommend/by-color/${productId}`);
+            const recommendRes = await api.get(`/recommend/by-product/${productId}`);
+            setRecommended(recommendRes.data);
+        } catch (e) {
+            console.log("추천 상품 없음");
+        }
+
+        // 3. ★ [수정] 다른 색상 (주소 변경!) ★
+        // 옛날 주소: /recommend/by-color/...
+        // 새 주소:   /products/.../colors
+        try {
+          const colorRes = await api.get(`/products/${productId}/colors`);
           setColorVariants(colorRes.data);
         } catch (e) {
           console.log("색상별 추천 없음");
         }
 
+        // 4. 가격대별 추천 (기존 유지)
         try {
           const priceRes = await api.get(`/recommend/by-price-range/${productId}?price_diff=30000`);
           setPriceRange(priceRes.data);
@@ -41,6 +52,7 @@ function ProductDetailPage() {
           console.log("가격대별 추천 없음");
         }
 
+        // 5. 코디 추천 (기존 유지)
         try {
           const coordRes = await api.get(`/recommend/coordination/${productId}`);
           setCoordination(coordRes.data);

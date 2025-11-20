@@ -39,15 +39,19 @@ function MainPage() {
     }
     try {
       setSearchLoading(true);
-      const response = await api.get('/recommend/by-text', {
-        params: {
-          query: query,
-          size: size || undefined
-        }
+      
+      // [변경] GET -> POST (우리가 만든 새 API는 POST 방식입니다)
+      // [변경] 주소: /recommend/by-text -> /products/search
+      const response = await api.post('/products/search', {
+        query: query, // 검색어
+        // size는 나중에 필터링 로직 추가되면 사용 (지금은 일단 보냄)
+        size: size || undefined 
       });
+      
       setProducts(response.data);
     } catch (error) {
       console.error("AI 텍스트 검색 실패:", error);
+      alert("검색 중 오류가 발생했습니다.");
     } finally {
       setSearchLoading(false);
     }

@@ -40,6 +40,13 @@ async def recommend_by_product(
         raise HTTPException(status_code=404, detail="상품을 찾을 수 없습니다.")
     
     print(f"📦 기준 상품: [{product_id}] {base_product.name}")
+
+    # ★ 성별 감지
+    gender = None
+    if "여성" in base_product.name or "여자" in base_product.name:
+        gender = "여성"
+    elif "남성" in base_product.name or "남자" in base_product.name:
+        gender = "남성"
     
     target_image_vector = await crud_recommend.get_vector_by_product_id(db, product_id)
     if not target_image_vector:
@@ -63,6 +70,15 @@ async def recommend_by_product(
     
     hybrid_scores = []
     for pid, product in product_map.items():
+         # ★ 성별 필터링
+        if gender == "여성":
+            if "여성" not in product.name and "여자" not in product.name:
+                continue
+        elif gender == "남성":
+            if "남성" not in product.name and "남자" not in product.name:
+                continue
+
+
         img_score = image_scores.get(pid, 0.0)
         keyword_score = calculate_keyword_score(
             base_product.name,

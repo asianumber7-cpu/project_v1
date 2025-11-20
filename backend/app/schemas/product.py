@@ -1,24 +1,26 @@
-# backend/app/schemas/product.py
-
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
-# 1. 공통 속성을 정의하는 Base 모델
+# 1. 공통 속성
 class ProductBase(BaseModel):
     name: str
-    description: str | None = None
-    image_url: str
-    
-    # 예: {"S": 10, "M": 20, "L": 5} (사이즈: 재고)
-    size_info: Dict[str, Any] | None = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    size_info: Optional[Dict[str, Any]] = None
 
-# 2. 상품 생성 시 받을 데이터 (Create)
+    # ★ [추가] JSON 데이터 필드들 ★
+    price: Optional[int] = None
+    brand: Optional[str] = None
+    color: Optional[str] = None
+    season: Optional[str] = None
+
+# 2. 생성 (Create)
 class ProductCreate(ProductBase):
-    pass  # 지금은 Base와 동일
+    pass
 
-# 3. DB에서 읽어와 API로 응답할 데이터 (Read)
+# 3. 읽기 (Read)
 class Product(ProductBase):
-    id: int  # DB에서 생성된 ID 포함
+    id: int
 
     class Config:
-        from_attributes = True  # SQLAlchemy 모델 객체를 Pydantic 모델로 자동 변환
+        from_attributes = True

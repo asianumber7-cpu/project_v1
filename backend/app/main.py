@@ -2,7 +2,9 @@
 
 from fastapi import FastAPI
 from app.api.v1.api import api_router
-from fastapi.middleware.cors import CORSMiddleware 
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 app = FastAPI(
     title="AI Shopping Mall Project"
@@ -20,6 +22,10 @@ app.add_middleware(
     allow_methods=["*"], 
     allow_headers=["*"], 
 )
+
+if os.path.exists("app/data"):
+    app.mount("/static", StaticFiles(directory="app/data"), name="static")
+
 
 app.include_router(api_router, prefix="/api/v1")
 

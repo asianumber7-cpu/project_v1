@@ -50,7 +50,7 @@ async def recommend_by_price(
     price_diff: int = 30000,
     db: AsyncSession = Depends(get_db)
 ):
-    """비슷한 가격대 추천"""
+    """비슷한 가격대 추천 (성별 필터 적용)"""
     print(f"\n💰 상품 ID {product_id} - 가격대별 추천 (±{price_diff:,}원)")
     
     base_product_result = await db.execute(
@@ -64,16 +64,38 @@ async def recommend_by_price(
     min_price = base_product.price - price_diff
     max_price = base_product.price + price_diff
     
-    similar_price_result = await db.execute(
-        select(ProductModel).filter(
-            ProductModel.price >= min_price,
-            ProductModel.price <= max_price,
-            ProductModel.id != product_id
-        ).limit(5)
+    # ★ 성별 감지
+    gender = None
+    if "여성" in base_product.name or "여자" in base_product.name:
+        gender = "여성"
+    elif "남성" in base_product.name or "남자" in base_product.name:
+        gender = "남성"
+    
+    print(f"🎯 감지된 성별: {gender}")
+    
+    # 기본 쿼리
+    query = select(ProductModel).filter(
+        ProductModel.price >= min_price,
+        ProductModel.price <= max_price,
+        ProductModel.id != product_id
     )
     
+    # ★ 성별 필터 적용
+    if gender == "여성":
+        query = query.filter(
+            (ProductModel.name.like("%여성%")) | (ProductModel.name.like("%여자%"))
+        )
+    elif gender == "남성":
+        query = query.filter(
+            (ProductModel.name.like("%남성%")) | (ProductModel.name.like("%남자%"))
+        )
+    
+    query = query.limit(5)
+    
+    similar_price_result = await db.execute(query)
     products = similar_price_result.scalars().all()
-    print(f"✅ {len(products)}개 발견")
+    
+    print(f"✅ {len(products)}개 발견 (성별 필터: {gender})")
     
     return [Product.from_orm(p) for p in products]
 
