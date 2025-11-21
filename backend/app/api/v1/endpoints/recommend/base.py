@@ -41,7 +41,7 @@ async def recommend_by_product(
     
     print(f"📦 기준 상품: [{product_id}] {base_product.name}")
 
-    # ★ 성별 감지
+    # 성별 감지
     gender = None
     if "여성" in base_product.name or "여자" in base_product.name:
         gender = "여성"
@@ -70,7 +70,7 @@ async def recommend_by_product(
     
     hybrid_scores = []
     for pid, product in product_map.items():
-         # ★ 성별 필터링
+         # 성별 필터링
         if gender == "여성":
             if "여성" not in product.name and "여자" not in product.name:
                 continue

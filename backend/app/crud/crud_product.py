@@ -72,7 +72,7 @@ async def search_products_by_text_vector(
     sports_keywords = {"레깅스", "쇼츠", "타이즈", "컴프레션"}
     has_sports_keyword = keywords and (sports_keywords & set(kw.lower() for kw in keywords))
     
-    # ★★★ 계절/날씨 키워드 감지 ★★★
+    # 계절/날씨 키워드 감지
     hot_keywords = {"쇼츠"}  # 더울 때 키워드
     cold_keywords = {"패딩", "롱패딩", "코트"}  # 추울 때 키워드
     
@@ -87,7 +87,7 @@ async def search_products_by_text_vector(
         
         product_text = f"{product.name} {product.description or ''}".lower()
         
-        # ★★★ 계절 모순 필터링 ★★★
+        # 계절 모순 필터링 
         if is_hot_query:
             # 더운 날씨 검색 시 겨울 아이템 제외
             if any(word in product_text for word in ["겨울", "윈터", "기모", "플리스", "패딩", "롱패딩", "울", "코듀로이"]):
