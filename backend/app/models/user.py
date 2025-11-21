@@ -9,6 +9,6 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
 
-    # (아이디어 3) 사용자의 신체 사이즈를 JSON 형태로 저장
+    # 사용자의 신체 사이즈를 JSON 형태로 저장
     # 예: {"height": 175, "weight": 70, "waist": 30}
     body_size = Column(JSON, nullable=True)

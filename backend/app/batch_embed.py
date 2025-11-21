@@ -1,4 +1,4 @@
-# backend/app/batch_embed.py (★ 완전 수정 ★)
+# backend/app/batch_embed.py
 
 import asyncio
 import httpx

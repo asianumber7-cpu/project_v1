@@ -1,4 +1,4 @@
-# backend/app/seed.py (★ 메타데이터 추가 ★)
+# backend/app/seed.py
 
 import asyncio
 import logging

@@ -1,4 +1,4 @@
-# backend/app/main.py (★최종 수정본★)
+# backend/app/main.py
 
 from fastapi import FastAPI
 from app.api.v1.api import api_router
@@ -10,7 +10,7 @@ app = FastAPI(
     title="AI Shopping Mall Project"
 )
 
-# (★수정★) 5173을 5174로 변경
+
 origins = [
     "http://localhost:5173",
 ]

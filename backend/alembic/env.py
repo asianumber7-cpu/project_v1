@@ -1,4 +1,4 @@
-# backend/alembic/env.py (★ 개선 버전 ★)
+# backend/alembic/env.py 
 
 from logging.config import fileConfig
 from app.db.database import Base
@@ -15,7 +15,7 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# ★ 환경변수에서 DATABASE_URL 가져오기 ★
+#  환경변수에서 DATABASE_URL 가져오기 
 docker_db_url = os.environ.get("DATABASE_URL")
 
 if docker_db_url:

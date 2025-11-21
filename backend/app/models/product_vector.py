@@ -13,7 +13,7 @@ class ProductVector(Base):
     # (중요) Product 테이블의 id를 참조하는 외래 키
     product_id = Column(Integer, ForeignKey("products.id"))
 
-    # (★핵심★) AI 모델(CLIP)이 변환한 벡터 값
+    # AI 모델(CLIP)이 변환한 벡터 값
     # 예: [0.1, 0.5, 0.2, ..., 0.9] (숫자 배열)
     vector = Column(JSON, nullable=False)
 

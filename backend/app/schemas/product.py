@@ -8,7 +8,7 @@ class ProductBase(BaseModel):
     image_url: Optional[str] = None
     size_info: Optional[Dict[str, Any]] = None
 
-    # ★ [추가] JSON 데이터 필드들 ★
+    # JSON 데이터 필드들 
     price: Optional[int] = None
     brand: Optional[str] = None
     color: Optional[str] = None
