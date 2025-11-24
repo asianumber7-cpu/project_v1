@@ -9,6 +9,8 @@ import torch.nn.functional as F
 from transformers import AutoProcessor, AutoModel
 import torch
 from sqlalchemy.future import select
+import sys
+sys.path.append(os.getcwd())
 
 from app.db.database import AsyncSessionLocal, engine, Base
 from app.models.product import Product
@@ -17,7 +19,9 @@ from app.models.product_vector import ProductVector
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MODEL_NAME = 'koclip/koclip-base-pt'
+# MODEL_NAME = 'koclip/koclip-base-pt'
+MODEL_NAME = 'Bingsu/clip-vit-large-patch14-ko'
+
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 DATA_DIR = "app/data"

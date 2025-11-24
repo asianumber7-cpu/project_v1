@@ -148,8 +148,8 @@ docker-compose up -d
 
 # 6. DB 초기화
 docker-compose exec backend alembic upgrade head
-docker-compose exec backend python -m app.seed
-docker-compose exec backend python -m app.batch_embed
+docker-compose exec backend python app/import_data.py
+
 
 # 7. 접속 확인
 # 브라우저: http://localhost

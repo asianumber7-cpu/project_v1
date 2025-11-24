@@ -106,19 +106,21 @@ async def recommend_by_text(
     size: str = None,
     db: AsyncSession = Depends(get_db)
 ):
-    """텍스트 검색 기반 추천 (AI 60% + 키워드 40%)"""
-    if not koclip_model or not koclip_tokenizer:
+    """텍스트 검색 기반 추천"""
+    # [수정] processor 사용 (tokenizer 대신)
+    if not koclip_model or not koclip_tokenizer: 
         raise HTTPException(status_code=503, detail="AI 모델이 로드되지 않았습니다.")
     
     expanded_query = expand_query(query)
     print(f"🔍 검색: '{query}' → '{expanded_query}'")
         
     try:
+        # [수정] AutoProcessor 사용법에 맞게 변경
         text_inputs = koclip_tokenizer(
-            expanded_query,
+            text=expanded_query,  # text= 인자 명시
             return_tensors="pt", 
             padding=True, 
-            truncation=True,
+            truncation=True, 
             max_length=77
         ).to(DEVICE)
         

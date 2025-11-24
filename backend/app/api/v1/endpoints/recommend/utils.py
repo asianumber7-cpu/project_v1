@@ -2,7 +2,8 @@
 
 import re
 from typing import List
-from transformers import VisionTextDualEncoderModel, AutoTokenizer, AutoImageProcessor
+# [수정] AutoModel, AutoProcessor 사용 (Large 모델 호환)
+from transformers import AutoModel, AutoProcessor, AutoTokenizer 
 import torch
 
 from app.schemas.product import Product
@@ -10,25 +11,35 @@ from app.schemas.product import Product
 # ========================================
 # 모델 설정
 # ========================================
-MODEL_NAME = 'koclip/koclip-base-pt'
+MODEL_NAME = 'Bingsu/clip-vit-large-patch14-ko'
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 koclip_model = None
-koclip_tokenizer = None
-koclip_image_processor = None
+koclip_tokenizer = None # Bingsu 모델은 tokenizer 대신 processor를 주로 씁니다
+koclip_image_processor = None # 위와 동일
+
+# 통합 프로세서 (추천)
+koclip_processor = None
 
 try:
-    print("KoCLIP 모델 로딩 시작...")
-    koclip_model = VisionTextDualEncoderModel.from_pretrained(MODEL_NAME).to(DEVICE)
-    koclip_tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    koclip_image_processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
+    print("Bingsu (Large) 모델 로딩 시작...")
+    # [수정] trust_remote_code=True 추가 및 AutoModel 사용
+    koclip_model = AutoModel.from_pretrained(MODEL_NAME, trust_remote_code=True).to(DEVICE)
+    
+    # Tokenizer와 ImageProcessor가 합쳐진 Processor를 로딩합니다
+    koclip_processor = AutoProcessor.from_pretrained(MODEL_NAME, trust_remote_code=True)
+    
+    # 호환성을 위해 변수 매핑 (기존 코드 수정을 최소화하기 위해)
+    koclip_tokenizer = koclip_processor 
+    koclip_image_processor = koclip_processor
+    
     koclip_model.eval()
-    print(f"KoCLIP 모델 로드 완료! (Device: {DEVICE})")
+    print(f"Bingsu (Large) 모델 로드 완료! (Device: {DEVICE})")
 except Exception as e:
-    print(f"KoCLIP 모델 로드 실패: {e}")
+    print(f"Bingsu 모델 로드 실패: {e}")
 
 # ========================================
-# 키워드 확장 사전
+# 키워드 확장 사전 (기존 유지)
 # ========================================
 KEYWORD_EXPANSIONS = {
     "무스탕": "무스탕 자켓 스웨이드 양털 가죽",
@@ -38,6 +49,8 @@ KEYWORD_EXPANSIONS = {
     "후드": "후드 후드티 스웨트 hoodie",
     "트레이닝": "트레이닝 조거 팬츠 운동복",
     "조거": "조거 트레이닝 팬츠 운동복",
+    "슬랙스": "슬랙스 정장 바지",
+    "맨투맨": "맨투맨 스웨트 셔츠 티셔츠"
 }
 
 def expand_query(query: str) -> str:
@@ -50,12 +63,10 @@ def expand_query(query: str) -> str:
 
 def calculate_keyword_score(query: str, product_name: str, product_description: str) -> float:
     """키워드 매칭 점수 계산 (0.0 ~ 1.0)"""
+    # 특수문자 제거 등 전처리
     query_clean = re.sub(r'[^\w\s]', ' ', query.lower())
-    query_clean = query_clean.replace('_', ' ')
-    
     product_text = f"{product_name} {product_description}".lower()
     product_text = re.sub(r'[^\w\s]', ' ', product_text)
-    product_text = product_text.replace('_', ' ')
     
     query_words = set(word for word in query_clean.split() if len(word) >= 2)
     product_words = set(word for word in product_text.split() if len(word) >= 2)
@@ -64,12 +75,13 @@ def calculate_keyword_score(query: str, product_name: str, product_description: 
         return 0.0
     
     common_words = query_words & product_words
+    score = len(common_words) / len(query_words)
     
-    if common_words:
-        print(f"      [DEBUG] '{query}' vs '{product_name}'")
-        print(f"              공통 단어: {common_words} → 점수: {len(common_words) / len(query_words):.4f}")
+    # 디버깅용 (너무 많이 뜨면 주석 처리)
+    # if common_words:
+    #     print(f"      [매칭] '{common_words}' -> {score:.2f}")
     
-    return len(common_words) / len(query_words)
+    return score
 
 def reorder_products(products: List[Product], product_ids: List[int]) -> List[Product]:
     """상품 리스트를 ID 순서대로 재정렬"""
